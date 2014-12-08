@@ -6,9 +6,12 @@
 package IPerson;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Set;
 /**
  *
  * @author alexey
@@ -19,8 +22,8 @@ public class ProxyServer extends UnicastRemoteObject implements ServerRemote{
     public ProxyServer() throws RemoteException {
         server = new Server();
         try {
-            Registry registry = LocateRegistry.createRegistry(2099);
-            registry.rebind("IPersonBook", this);
+            Registry registry = LocateRegistry.createRegistry(2050);
+            registry.rebind("IPerson", this);
             System.out.println("Server has started...");
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -29,45 +32,46 @@ public class ProxyServer extends UnicastRemoteObject implements ServerRemote{
     
     public static void main(String[] args) throws RemoteException {
           ProxyServer proxyServer = new ProxyServer();
-//        Person tmp = (Person) server.addPerson("TEST", "TEST");
-//        server.addContact(tmp, "a@tvr", "+8 871 12");
-//        tmp = (Person) server.addPerson("TEST2", "TEST2");
-//        IContact con = server.addContact(tmp, "a2@tvr", "+8 871 15");
-//        server.deleteContact(tmp);
-//        server.printPersons();  
     }
 
     @Override
     public IPerson addPerson(String name, String address) throws RemoteException {
-         return null;
-//                 server.addPerson(name, address);
+         return server.addPerson(name, address);
     }
 
     @Override
-    public IContact deletePerson(Person person) {
-        return null;
-//                server.deletePerson(person);
+    public boolean deletePerson(String name, String address) throws RemoteException {
+        return server.deletePerson(name, address);
     }
 
     @Override
-    public IContact addContact(Person person, String email, String mobilePhone) throws RemoteException {
-        return server.addContact(person, email, mobilePhone);
+    public IPerson updatePerson(int personId, String name, String address) throws RemoteException {
+        return server.updatePerson(personId, name, address);
     }
 
     @Override
-    public IContact deleteContact(Person person) throws RemoteException {
-        return null;
-////                server.deleteContact(person);
+    public Set<IPerson> getPersons() {
+        return server.getPersons();
     }
 
-//    @Override
-//    public void printPersons() throws RemoteException {
-//         server.printPersons();
-//    }
+    @Override
+    public IContact addPersonContact(Person person, String email, String mobilePhone) throws RemoteException {
+        return server.addPersonContact(person, email, mobilePhone);
+    }
 
     @Override
-    public void printPersons() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public IContact updatePersonContact(int personId, String email, String address, int id) throws RemoteException {
+        return server.updatePersonContact(personId, email, address, id);
+    }
+
+    @Override
+    public IContact removePersonContact(Person person, int contactId) throws RemoteException {
+        return server.removePersonContact(person, contactId);
+    }
+
+    @Override
+    public HashMap<Integer, IContact> getPersonContacts(IPerson person) throws RemoteException {
+        return server.getPersonContacts(person);
     }
     
     

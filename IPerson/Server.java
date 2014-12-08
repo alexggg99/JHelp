@@ -18,17 +18,23 @@ public class Server{
         this.persons = Collections.synchronizedSet(new TreeSet<IPerson>());
     }
     
-    public IPerson addPerson(IPerson person){
-        persons.add(person);
-        return person;
+    public IPerson addPerson(String name, String address){
+        IPerson newPerson = new Person(name, address);
+        persons.add(newPerson);
+        return newPerson;
     }
     
-    public boolean deletePerson(IPerson person){
+    public boolean deletePerson(String name, String address){
+        IPerson person = new Person(name, address);
         return persons.remove(person);
     }
     
-    public IPerson updatePerson(IPerson person, String name, String address){
-        IPerson currPerson = findPerson(person);
+    public IPerson updatePerson(int personId, String name, String address){
+        IPerson currPerson = null;
+        for(IPerson p : persons){
+            if(p.getId() == personId)
+                currPerson = p;
+        }
         if(currPerson != null){
             currPerson.updateName(name);
             currPerson.updateAddress(address);
@@ -36,7 +42,7 @@ public class Server{
         return currPerson;
     }
     
-    public IContact addContact(IPerson person, String email, String mobilePhone){
+    public IContact addPersonContact(IPerson person, String email, String mobilePhone){
         IPerson currPerson = findPerson(person);
         if(currPerson != null){
             currPerson.addContact(email, mobilePhone);
@@ -63,8 +69,8 @@ public class Server{
         return persons;
     }
     
-    public IContact updatePersonContact(IPerson person, String email, String address, int id){
-        IPerson currPerson = findPerson(person);
+    public IContact updatePersonContact(int personId, String email, String address, int id){
+        IPerson currPerson = findPerson(personId);
         if(currPerson != null){
             IContact contact = currPerson.updateContact(id, email, address);
             return contact;
@@ -83,12 +89,15 @@ public class Server{
         return null;
     }
     
-//    public void printPersons(){
-//        for (Map.Entry<Person, Contact> entrySet : persons.entrySet()) {
-//                Person key = entrySet.getKey();
-//                System.out.print(key);
-//                Contact value = entrySet.getValue();
-//                System.out.println(" { " + value + "}");
-//            }
-//    }
+    public IPerson findPerson(int personId){
+        Iterator<IPerson> it = persons.iterator();
+        while(it.hasNext()){
+            IPerson tmp = it.next();
+            if(tmp.getId() == personId){
+                return tmp;
+            }
+        }
+        return null;
+    }
+   
 }
