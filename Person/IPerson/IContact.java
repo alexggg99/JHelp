@@ -13,4 +13,6 @@ public interface IContact extends Serializable{
         IContact updateContact(String email, String mobilePhone);
         String getEmail();
         String getMobilePhone();
+        void setEmail(String email);
+        void setMobilePhone(String mobile);
 }

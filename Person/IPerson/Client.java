@@ -5,10 +5,13 @@
  */
 package IPerson;
 
+import static IPerson.ProxyServer.server;
 import java.net.MalformedURLException;
 import java.rmi.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,27 +20,27 @@ import java.util.Set;
 public class Client implements ServerRemote, Remote{
     ServerRemote server;
     
-    public Client(){
+    public Client() throws RemoteException{
         try{
             server = (ServerRemote) Naming.lookup("rmi://localhost:2050/IPerson");
             System.out.println("Server conected..");
-            System.out.println(getPersons());
-            server.addPerson("T", "M");
-            server.addPerson("A", "M");
-            System.out.println(getPersons());
-            server.deletePerson("T", "M");
-            System.out.println(getPersons());
-            addPersonContact(new Person("A", "M"), "bhh@pop", "+7 8892 223");
-            System.out.print(getPersons().iterator().next());
-            System.out.println(getPersons().iterator().next().getContacts());
-            removePersonContact(new Person("T", "M"), 1);
-            System.out.println(getPersons().iterator().next().getContacts());
+//            System.out.println(getPersons());
+//            server.addPerson("T", "M");
+//            server.addPerson("A", "M");
+//            System.out.println(getPersons());
+//            server.deletePerson("T", "M");
+//            System.out.println(getPersons());
+//            addPersonContact(new Person("A", "M"), "bhh@pop", "+7 8892 223");
+//            System.out.print(getPersons().iterator().next());
+//            System.out.println(getPersons().iterator().next().getContacts());
+//            removePersonContact(new Person("T", "M"), 1);
+//            System.out.println(getPersons().iterator().next().getContacts());
         }catch(Exception ex){
-            ex.printStackTrace();
+            throw new RemoteException();
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException {
         Client client = new Client();
     }
     
@@ -47,8 +50,8 @@ public class Client implements ServerRemote, Remote{
     }
 
     @Override
-    public boolean deletePerson(String name, String address) throws RemoteException {
-        return server.deletePerson(name, address);
+    public boolean deletePerson(int personId) throws RemoteException {
+        return server.deletePerson(personId);
     }
 
     @Override
@@ -57,7 +60,7 @@ public class Client implements ServerRemote, Remote{
     }
 
     @Override
-    public Set<IPerson> getPersons() throws RemoteException {
+    public List<IPerson> getPersons() throws RemoteException {
          return server.getPersons();
     }
 
@@ -77,8 +80,12 @@ public class Client implements ServerRemote, Remote{
     }
 
     @Override
-    public HashMap<Integer, IContact> getPersonContacts(IPerson person) throws RemoteException {
+    public List<IContact> getPersonContacts(IPerson person) throws RemoteException {
         return server.getPersonContacts(person);
     }
     
+    @Override
+    public IPerson findPerson(int personId) throws RemoteException{
+        return server.findPerson(personId);
+    }
 }

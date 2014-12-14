@@ -12,10 +12,11 @@ import java.util.*;
  * @author alexey
  */
 public class Server{
-    private Set<IPerson> persons;
+    private List<IPerson> persons;
 
     public Server() {
-        this.persons = Collections.synchronizedSet(new TreeSet<IPerson>());
+        //this.persons = Collections.synchronizedSet(new TreeSet<IPerson>());
+        this.persons = Collections.synchronizedList(new ArrayList<IPerson>());
     }
     
     public IPerson addPerson(String name, String address){
@@ -24,12 +25,29 @@ public class Server{
         return newPerson;
     }
     
-    public boolean deletePerson(String name, String address){
-        IPerson person = new Person(name, address);
-        return persons.remove(person);
+    public boolean deletePerson(int personId){
+        Iterator it = persons.iterator();
+        while(it.hasNext()){
+            if(((IPerson)it.next()).getId() == personId){
+                it.remove();
+                break;
+            }
+        }
+        return ifContainId(personId);
+    }
+    
+    public boolean ifContainId(int personId){
+        for(IPerson p : getPersons())
+            if(p.getId() == personId)
+                return true;
+        return false;
     }
     
     public IPerson updatePerson(int personId, String name, String address){
+//        for(IPerson p : getPersons())
+//            if(p.getId() != personId)
+//                return addPerson(name, address);
+//                return null;
         IPerson currPerson = null;
         for(IPerson p : persons){
             if(p.getId() == personId)
@@ -43,14 +61,17 @@ public class Server{
     }
     
     public IContact addPersonContact(IPerson person, String email, String mobilePhone){
-        IPerson currPerson = findPerson(person);
+        if(email.isEmpty() && mobilePhone.isEmpty()){
+            return null;
+        }
+        IPerson currPerson = findPerson(person.getId());
         if(currPerson != null){
             currPerson.addContact(email, mobilePhone);
         }
         return null;
     }
     
-    public HashMap<Integer, IContact> getPersonContacts(IPerson person){
+    public List<IContact> getPersonContacts(IPerson person){
         return findPerson(person).getContacts();
     }
     
@@ -65,7 +86,7 @@ public class Server{
         return null;
     }
     
-    public Set<IPerson> getPersons(){
+    public List<IPerson> getPersons(){
         return persons;
     }
     
@@ -82,7 +103,7 @@ public class Server{
         Iterator<IPerson> it = persons.iterator();
         while(it.hasNext()){
             IPerson tmp = it.next();
-            if(tmp == person){
+            if(tmp.equals(person)){
                 return tmp;
             }
         }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package IPersinTest;
+package IPersonTest;
 
 import IPerson.Person;
 import IPerson.*;
@@ -51,22 +51,23 @@ public class PersonTest {
     
     @Test
     public void removePersonContact(){
-        person.addContact(otherContact.getEmail(), otherContact.getMobilePhone());
-        assertEquals(otherContact, person.removeContact(1));
+        IContact con = person.addContact("test2@test.ru", "+79062551237");
+        person.removeContact(con.getId());
+        assertTrue(person.getContacts().isEmpty());
     }
     
     @Test
     public void updatePersonContact(){
-        person.addContact(otherContact.getEmail(), otherContact.getMobilePhone());
-        person.updateContact(1, "test6@list.ru", "+7 911 3254413");
-        assertTrue(person.getContacts().containsValue(new Contact("test6@list.ru", "+7 911 3254413")));
+        IContact con = person.addContact("test2@test.ru", "+79062551237");
+        person.updateContact(con.getId(), "test6@list.ru", "+7 911 3254413");
+        assertTrue(person.getContacts().contains(new Contact("test6@list.ru", "+7 911 3254413")));
     }
     
-    @Test(expected = NoContactFoundException.class)
+    @Test
     public void addNonExistingContact(){
         Contact contact = new Contact("www", null);
-        person.updateContact(1, "test3@list.ru", "+7 911 3254413");
-        assertEquals(Arrays.asList(new Contact("test3@list.ru", "+7 911 3254413")), person.getContacts());
+        person.updateContact(contact.getId(), "test3@list.ru", "+7 911 3254413");
+        assertTrue(person.getContacts().isEmpty());
     }
     
 }

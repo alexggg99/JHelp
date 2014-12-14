@@ -10,7 +10,8 @@ import IPerson.IPerson;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -22,7 +23,7 @@ public class Person implements IPerson {
     private String name, address;
     private int id;
     private volatile static int count = 0;
-    private HashMap<Integer, IContact> contacts;
+    private List<IContact> contacts;
 
     @Override
     public String getName() {
@@ -53,7 +54,16 @@ public class Person implements IPerson {
         synchronized (this) {
             this.id = ++count;
         }
-        contacts = new HashMap<Integer, IContact>();
+        contacts = new ArrayList<IContact>();
+    }
+    
+    public Person(int id, String name, String address) {
+        this.name = name;
+        this.address = address;
+        synchronized (this) {
+            this.id = id;
+        }
+        contacts = new ArrayList<IContact>();
     }
 
     @Override
@@ -97,7 +107,8 @@ public class Person implements IPerson {
         this.address = address;
     }
 
-    public HashMap<Integer, IContact> getContacts() {
+    @Override
+    public List<IContact> getContacts() {
         return contacts;
     }
 
@@ -105,23 +116,45 @@ public class Person implements IPerson {
     public IContact addContact(String Email, String Mobile) {
         IContact contact = new Contact(Email, Mobile);
         Integer id = Integer.valueOf(contacts.size() + 1);
-        this.contacts.put(id, contact);
+        this.contacts.add(contact);
         return contact;
     }
 
     @Override
     public IContact removeContact(int id) {
-        return contacts.remove(id);
+        IContact con = null;
+        Iterator it = contacts.iterator();
+        while(it.hasNext()){
+            con = (IContact) it.next();
+            if(con.getId() == id ){
+                it.remove();
+                break;
+            }
+        }
+        return con;
     }
 
     @Override
     public IContact updateContact(int id, String Email, String Mobile) {
-        if(!contacts.containsKey(id)){
-            throw new NoContactFoundException("No such contact found");
+        IContact con = null;
+        Iterator it = contacts.iterator();
+        while(it.hasNext()){
+            con = (IContact) it.next();
+            if(con.getId() == id ){
+                con.updateContact(Email, Mobile);
+                break;
+            }
         }
-        IContact cont = contacts.get(id);
-        cont.updateContact(Email, Mobile);
-        return cont;
+        return con;
+    }
+    
+    private IContact findContact(int id){
+        for(IContact c : contacts)
+            if(c.getId() == id)
+                return c;
+            else
+                throw new NoContactFoundException("No such contact found");
+        return null;
     }
 
     @Override

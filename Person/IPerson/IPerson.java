@@ -8,6 +8,7 @@ package IPerson;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public interface IPerson extends Serializable, Comparable<Object>{
 	String getName ();
@@ -18,5 +19,5 @@ public interface IPerson extends Serializable, Comparable<Object>{
         IContact addContact(String Email, String Mobile);
         IContact removeContact(int id);
         IContact updateContact(int id, String Email, String Mobile);
-        HashMap<Integer, IContact> getContacts();
+        List<IContact> getContacts();
 }

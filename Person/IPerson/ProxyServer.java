@@ -11,6 +11,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 /**
  *
@@ -25,6 +26,7 @@ public class ProxyServer extends UnicastRemoteObject implements ServerRemote{
             Registry registry = LocateRegistry.createRegistry(2050);
             registry.rebind("IPerson", this);
             System.out.println("Server has started...");
+            
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
@@ -40,8 +42,8 @@ public class ProxyServer extends UnicastRemoteObject implements ServerRemote{
     }
 
     @Override
-    public boolean deletePerson(String name, String address) throws RemoteException {
-        return server.deletePerson(name, address);
+    public boolean deletePerson(int personId) throws RemoteException {
+        return server.deletePerson(personId);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class ProxyServer extends UnicastRemoteObject implements ServerRemote{
     }
 
     @Override
-    public Set<IPerson> getPersons() {
+    public List<IPerson> getPersons() {
         return server.getPersons();
     }
 
@@ -70,9 +72,13 @@ public class ProxyServer extends UnicastRemoteObject implements ServerRemote{
     }
 
     @Override
-    public HashMap<Integer, IContact> getPersonContacts(IPerson person) throws RemoteException {
+    public List<IContact> getPersonContacts(IPerson person) throws RemoteException {
         return server.getPersonContacts(person);
     }
-    
+
+    @Override
+    public IPerson findPerson(int personId) throws RemoteException {
+        return server.findPerson(personId);
+    }
     
 }

@@ -26,10 +26,12 @@ public class Contact implements IContact{
         return mobilePhone + '/' + email;
     }
 
+    @Override
     public void setEmail(String email) {
         this.email = email;
     }
 
+    @Override
     public void setMobilePhone(String mobilePhone) {
         this.mobilePhone = mobilePhone;
     }
@@ -38,6 +40,12 @@ public class Contact implements IContact{
         this.email = email;
         this.mobilePhone = mobilePhone;
         this.id = ++count;
+    }
+    
+    public Contact(int id ,String email, String mobilePhone) {
+        this.email = email;
+        this.mobilePhone = mobilePhone;
+        this.id = id;
     }
 
     @Override
@@ -63,6 +71,14 @@ public class Contact implements IContact{
     }
 
     @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 23 * hash + Objects.hashCode(this.email);
+        hash = 23 * hash + Objects.hashCode(this.mobilePhone);
+        return hash;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -79,6 +95,5 @@ public class Contact implements IContact{
         }
         return true;
     }
-        
-    
+
 }

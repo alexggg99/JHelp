@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package IPersinTest;
+package IPersonTest;
 
 import IPerson.Contact;
+import IPerson.IContact;
 import IPerson.IPerson;
 import IPerson.Person;
 import IPerson.ProxyServer;
@@ -30,8 +31,7 @@ public class ServerTest {
     @Before
     public void setUp() throws RemoteException {
         server = new Server();
-        person = new Person("Sergey", "Pushkin");
-        server.addPerson("Sergey", "Pushkin");
+        person = server.addPerson("Sergey", "Pushkin");
     }
     
     @Test
@@ -42,34 +42,42 @@ public class ServerTest {
     
     @Test
     public void deletePersonTest(){
-        server.deletePerson("Sergey", "Pushkin");
-        assertFalse(server.getPersons().contains(new Person("Sergey", "Pushkin")));
+        assertFalse(server.deletePerson(person.getId()));
     }
     
     @Test
-    public void updatePersonTest(){
+    public void updateNotExistingPersonTest(){
         IPerson newPerson = new Person("name12", "address");
-        assertEquals(newPerson ,server.updatePerson(1, "name12", "address"));
+        assertEquals(null ,server.updatePerson(125, "name12", "address"));
     }
     
     @Test
-    public void addContactToPerson(){
+    public void addContactToPersonTest(){
         server.addPersonContact(person, "test@123", "9899055");
-        assertTrue(person.getContacts().containsValue(new Contact("test@123", "9899055")));
+        IPerson p = server.getPersons().get(0);
+        assertTrue(p.getContacts().contains(new Contact("test@123", "9899055")));
     }
     
     @Test
-    public void removeContact(){
+    public void removeContactTest(){
         server.addPersonContact(person, "test@123", "9899055");
         server.removePersonContact(person, 1);
-        assertFalse(person.getContacts().containsValue(new Contact("test@123", "9899055")));
+        assertFalse(person.getContacts().contains(new Contact("test@123", "9899055")));
     }
     
     @Test
-    public void updatePersonContact(){
-        server.addPersonContact(person, "test@123", "9899055");
-        server.updatePersonContact(1, "54ret@me", "+8 911 12", 1);
-        boolean t = person.getContacts().containsValue(new Contact("54ret@me", "+8 911 12"));
+    public void updatePersonContactTest(){
+        IContact con = server.addPersonContact(person, "test@123", "9899055");
+        server.updatePersonContact(con.getId(), "54ret@me", "+8 911 12", 1);
+        IPerson p = server.getPersons().get(0);
+        boolean t = p.getContacts().contains(new Contact("54ret@me", "+8 911 12"));
         assertTrue(t);
+    }
+    
+    @Test
+    public void findPersonTest(){
+        IPerson person = server.addPerson("Sergey2", "Pushkin2");
+        IPerson p = server.findPerson(person.getId());
+        assertNotNull(p);
     }
 }
